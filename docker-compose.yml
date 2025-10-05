@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  instagram-agent:
+    build: .
+    container_name: instagram-ad-agent
+    restart: unless-stopped
+    environment:
+      - CEREBRUS_API_KEY=${CEREBRUS_API_KEY}
+      - CEREBRUS_BASE_URL=${CEREBRUS_BASE_URL}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - INSTAGRAM_ACCESS_TOKEN=${INSTAGRAM_ACCESS_TOKEN}
+      - INSTAGRAM_APP_ID=${INSTAGRAM_APP_ID}
+      - INSTAGRAM_APP_SECRET=${INSTAGRAM_APP_SECRET}
+      - STORAGE_PATH=/app/data
+    volumes:
+      - ./data:/app/data
+      - ./logs:/var/log
+    env_file:
+      - .env
+    networks:
+      - instagram-network
+
+  # Optional: Add a monitoring service
+  monitoring:
+    image: prom/prometheus:latest
+    container_name: instagram-monitoring
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - instagram-network
+    profiles:
+      - monitoring
+
+networks:
+  instagram-network:
+    driver: bridge
+
+volumes:
+  data:
+  logs:
