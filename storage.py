@@ -120,7 +120,9 @@ class ContentStorage:
         """Check if a prompt is a duplicate based on similarity."""
         # Simple similarity check - can be enhanced with more sophisticated algorithms
         for existing_prompt in prompts:
-            if self._calculate_similarity(prompt, existing_prompt["prompt"]) > 0.8:
+            similarity = self._calculate_similarity(prompt, existing_prompt["prompt"])
+            # Only consider it a duplicate if similarity is very high (0.9+) to avoid false positives
+            if similarity > 0.9:
                 return True
         return False
     
